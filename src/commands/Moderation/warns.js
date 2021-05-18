@@ -6,7 +6,7 @@ class WarnsCommand extends Command {
   constructor() {
     super('warns', {
       aliases: ['warns'],
-      ownerOnly: true,
+      ownerOnly: false,
       category: 'Moderation',
       channel: 'guild',
       args: [
