@@ -29,8 +29,9 @@ class SetPlayingCommand extends Command {
     if (!args.newPlayingStatus) {
       return await this.client.user
         .setPresence({
-          activity: { name: 'my ghost.', type: 'WATCHING' },
+          activity: { name: 'over my ghost.', type: 'WATCHING' },
           status: 'online',
+          afk: false,
         })
         .then(async () => {
           message.channel.send(
