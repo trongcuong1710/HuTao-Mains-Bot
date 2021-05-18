@@ -1,0 +1,39 @@
+{
+  "name": "htm-bot",
+  "version": "0.1.00",
+  "description": "Hu Tao Mains exclusive Discord Bot.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eilyz/HuTao-Mains-Bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Eilyz/HuTao-Mains-Bot/issues"
+  },
+  "homepage": "https://github.com/Eilyz/HuTao-Mains-Bot#readme",
+  "dependencies": {
+    "canvacord": "^5.2.0",
+    "discord-akairo": "^8.1.0",
+    "discord-canvas": "^1.4.1",
+    "discord.js": "^12.5.3",
+    "dotenv": "^9.0.2",
+    "enmap": "^5.8.5",
+    "mathjs": "^9.4.0",
+    "moment": "^2.29.1",
+    "mongoose": "^5.12.9",
+    "ms": "^2.1.3",
+    "nekos.life": "^2.0.7",
+    "nodemon": "^2.0.7",
+    "path": "^0.12.7",
+    "pretty-ms": "^7.0.1",
+    "random-discord": "^1.0.2-1",
+    "random-stuff-api": "^10.1.1",
+    "superagent": "^6.1.0"
+  }
+}
