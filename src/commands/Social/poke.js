@@ -11,7 +11,7 @@ class PokeCommand extends Command {
       cooldown: 30000,
       description: {
         description: 'Poke a user.',
-        usage: 'poke <user>',
+        usage: 'poke',
       },
     });
   }

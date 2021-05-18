@@ -29,7 +29,7 @@ class RemoveWarnCommand extends Command {
       ],
       description: {
         description: "Remove a member's warn.",
-        usage: 'warn <member> <reason>',
+        usage: 'removewarn <member> <warn ID>',
       },
     });
   }

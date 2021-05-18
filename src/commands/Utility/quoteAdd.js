@@ -23,7 +23,7 @@ class AddQuoteCommand extends Command {
       ],
       description: {
         description: 'Add a quote to the database and call it when needed.',
-        usage: 'addquote <quoteName> <message>',
+        usage: 'addquote <trigger> <message/JSON for embed>',
       },
     });
   }

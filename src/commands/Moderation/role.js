@@ -35,7 +35,7 @@ class RoleCommand extends Command {
       ],
       description: {
         description: 'Adds/removes a role from the specified member.',
-        usage: 'role <user> <role>',
+        usage: 'role <member> <role>',
       },
     });
   }

@@ -18,7 +18,7 @@ class RemoveQuoteCommand extends Command {
       ],
       description: {
         description: 'Remove a quote from the database.',
-        usage: 'removequote <quoteName> <message>',
+        usage: 'removequote <trigger>',
       },
     });
   }

@@ -62,11 +62,11 @@ class ModmailCommand extends Command {
               parent: roles.modMailParentRole,
               permissionOverwrites: [
                 {
-                  id: roles.adminRole, // Liyue Qixing
+                  id: roles.adminRole, // Admin
                   allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
                 },
                 {
-                  id: '763583452762734592', // everyone
+                  id: '830700055451271188', // everyone
                   deny: ['VIEW_CHANNEL'],
                 },
                 {
@@ -93,7 +93,7 @@ class ModmailCommand extends Command {
                 filter,
                 update
               );
-              const admins = global.guild.roles.cache.get('810082837863858186');
+              const admins = global.guild.roles.cache.get(roles.adminRole);
               channel.send(
                 `${admins}`,
                 new Discord.MessageEmbed({

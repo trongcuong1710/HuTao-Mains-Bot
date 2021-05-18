@@ -30,7 +30,7 @@ class SayCommand extends Command {
       description: {
         description:
           'Resends the message either to current channel or given channel.',
-        usage: 'say',
+        usage: 'say <channel> <message>',
       },
     });
   }

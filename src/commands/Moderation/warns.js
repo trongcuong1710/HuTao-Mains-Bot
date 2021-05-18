@@ -28,7 +28,7 @@ class WarnsCommand extends Command {
       ],
       description: {
         description: 'Shows list of warnings of a member.',
-        usage: 'warns <member>',
+        usage: 'warns <member> / warns <member> <warn ID>',
       },
     });
   }

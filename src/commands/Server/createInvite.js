@@ -13,7 +13,7 @@ class CreateInviteCommand extends Command {
       cooldown: 10000,
       description: {
         description: 'Creates invite for the server and sends it.',
-        usage: 'createinvite or inv',
+        usage: 'createinvite',
       },
     });
   }

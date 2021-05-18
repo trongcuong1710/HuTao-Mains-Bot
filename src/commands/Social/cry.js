@@ -9,7 +9,7 @@ class CryCommand extends Command {
       channel: 'guild',
       cooldown: 30000,
       description: {
-        description: 'Sends a cry image/gif.',
+        description: 'Cry.',
         usage: 'cry',
       },
     });

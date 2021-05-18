@@ -19,7 +19,7 @@ class SetUsernameCommand extends Command {
       ],
       description: {
         description: "Change Hu Tao's username.",
-        usage: 'setusername newName',
+        usage: 'setusername <newName>',
       },
     });
   }

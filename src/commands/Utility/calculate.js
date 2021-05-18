@@ -17,7 +17,7 @@ class CalculateCommand extends Command {
       ],
       description: {
         description: 'Does math for you.',
-        usage: 'calculate',
+        usage: 'calculate <math>',
       },
     });
   }

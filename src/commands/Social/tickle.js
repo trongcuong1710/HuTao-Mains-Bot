@@ -11,7 +11,7 @@ class TickleCommand extends Command {
       cooldown: 30000,
       description: {
         description: 'Tickle a user.',
-        usage: 'tickle <user>',
+        usage: 'tickle',
       },
     });
   }

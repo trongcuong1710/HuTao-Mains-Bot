@@ -1,6 +1,6 @@
 {
   "name": "htm-bot",
-  "version": "0.1.00",
+  "version": "0.1.22",
   "description": "Hu Tao Mains exclusive Discord Bot.",
   "main": "main.js",
   "scripts": {

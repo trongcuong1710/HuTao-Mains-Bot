@@ -11,7 +11,7 @@ class CuddleCommand extends Command {
       cooldown: 30000,
       description: {
         description: 'Cuddle a user.',
-        usage: 'cuddle <user>',
+        usage: 'cuddle',
       },
     });
   }

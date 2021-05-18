@@ -10,7 +10,7 @@ class EmbedCommand extends Command {
       channel: 'guild',
       description: {
         description: 'Takes json input and returns embedded message.',
-        usage: 'embed <JSONinput>',
+        usage: 'embed <JSON>',
       },
     });
   }

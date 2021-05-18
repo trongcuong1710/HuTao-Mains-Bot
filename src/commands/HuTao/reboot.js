@@ -5,7 +5,7 @@ class RebootCommand extends Command {
   constructor() {
     super('reboot', {
       aliases: ['reboot'],
-      description: 'Reboots the bot.',
+      description: { description: 'Reboots the bot.', usage: 'reboot' },
       ownerOnly: false,
       category: 'Keqing',
     });

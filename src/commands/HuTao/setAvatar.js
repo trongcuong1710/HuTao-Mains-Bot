@@ -18,7 +18,7 @@ class SetAvatarCommand extends Command {
       ],
       description: {
         description: "Change Hu Tao's avatar.",
-        usage: 'setavatar url',
+        usage: 'setavatar <url>',
       },
     });
   }

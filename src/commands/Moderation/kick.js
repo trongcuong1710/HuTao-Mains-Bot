@@ -31,7 +31,7 @@ class KickCommand extends Command {
       ],
       description: {
         description: 'Kicks the member.',
-        usage: 'kick <user> <reason>',
+        usage: 'kick <member> <reason>',
       },
     });
   }

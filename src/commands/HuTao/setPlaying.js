@@ -19,7 +19,7 @@ class SetPlayingCommand extends Command {
       ],
       description: {
         description: "Change Hu Tao's status, no input resets status.",
-        usage: 'setplaying new status',
+        usage: 'setplaying <new status>',
       },
     });
   }

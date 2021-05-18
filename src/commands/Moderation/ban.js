@@ -31,7 +31,7 @@ class BanCommand extends Command {
       ],
       description: {
         description: 'Ban the specified member.',
-        usage: 'ban <user> <reason>',
+        usage: 'ban <member> <reason>',
       },
     });
   }

@@ -13,7 +13,7 @@ class MuteCommand extends Command {
       clientPermissions: ['MUTE_MEMBERS'],
       description: {
         description: 'Mute a member.',
-        usage: 'mute <user> <duration> <reason>',
+        usage: 'mute <member> <duration> <reason>',
       },
       args: [
         {
