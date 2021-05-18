@@ -18,15 +18,14 @@ class MyClient extends AkairoClient {
         disableMentions: 'everyone',
         fetchAllMembers: true,
         //partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'],
-        // presence: {
-        //   activity: {
-        //     name: `I'm back!`,
-        //     type: 'STREAMING',
-        //     url: 'https://www.twitch.tv/keqingmains',
-        //   },
-        //   status: 'online',
-        //   afk: false,
-        // },
+        presence: {
+          activity: {
+            name: `over my ghost.`,
+            type: 'WATCHING',
+          },
+          status: 'online',
+          afk: false,
+        },
       }
     );
     this.commandHandler = new CommandHandler(this, {
@@ -40,7 +39,7 @@ class MyClient extends AkairoClient {
     this.commandHandler.handle = async function (message) {
       if (message.author.id !== this.client.ownerID) return;
       if (
-        !(await this.client.db.keqingBlacklists.findOne({
+        !(await this.client.db.huTaoBlacklists.findOne({
           channel_id: message.channel,
         }))
       )
