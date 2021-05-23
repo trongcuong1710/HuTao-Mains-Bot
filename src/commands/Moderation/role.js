@@ -31,6 +31,7 @@ class RoleCommand extends Command {
               true
             );
           },
+          match: 'rest',
         },
       ],
       description: {

@@ -33,104 +33,104 @@ class GuildMemberUpdateListener extends Listener {
     );
 
     const keqingLove = new Discord.MessageAttachment(
-      'https://cdn.discordapp.com/emojis/767201369525321758.png?v=1'
+      'https://cdn.discordapp.com/emojis/834965684126482493.png?v=1'
     );
 
     if (!wasntBoosting && isBoosting) {
       newMember.guild.channels.cache
         .get(channels.starboardChannel)
         .send(`${newMember}, ${randomMessage}`, keqingLove);
-      await newMember.roles.add('843445348760158218');
+      // await newMember.roles.add('843445348760158218'); // Boosted role (kqm)
     }
 
-    const wasntSupporting = oldMember.roles.cache.find(
-      (role) => role.id === roles.adeptusPatreon
-    );
-    const isSupporting = newMember.roles.cache.find(
-      (role) => role.id === roles.adeptusPatreon
-    );
+    // const wasntSupporting = oldMember.roles.cache.find(
+    //   (role) => role.id === roles.adeptusPatreon
+    // );
+    // const isSupporting = newMember.roles.cache.find(
+    //   (role) => role.id === roles.adeptusPatreon
+    // );
 
-    const customRoles = await this.client.db.keqingCustomRoles.find({
-      roleOwner: newMember.id,
-    });
-    const role = global.guild.roles.cache.get(
-      customRoles.map((x) => x.roleID).join('\n')
-    );
-    const prefix = this.client.commandHandler.prefix;
-    if (!wasntSupporting && isSupporting) {
-      newMember
-        .send(
-          new Discord.MessageEmbed({
-            color: 'GREEN',
-            title: 'You have unlocked a new perk by being a patreon supporter!',
-            description: `You can now have a custom role you desire!`,
-            fields: [
-              {
-                name: `${prefix}myrole <role name>`,
-                value: `Creates a custom role with the given name.`,
-              },
-              {
-                name: `${prefix}myrole --name <new name>`,
-                value: `Edits your role name.`,
-                inline: true,
-              },
-              {
-                name: `${prefix}myrole --color <new color>`,
-                value: `Edits your role color.`,
-                inline: true,
-              },
-            ],
-          })
-        )
-        .catch(() => {
-          global.guild.channels.cache.get(channels.patronsOnlyChannel).send(
-            newMember,
-            new Discord.MessageEmbed({
-              color: 'GREEN',
-              title:
-                'You have unlocked a new perk by being a patreon supporter!',
-              description: `You can now have a custom role you desire!`,
-              fields: [
-                {
-                  name: `${prefix}myrole <role name>`,
-                  value: `Creates a custom role with the given name.`,
-                },
-                {
-                  name: `${prefix}myrole --name <new name>`,
-                  value: `Edits your role name.`,
-                  inline: true,
-                },
-                {
-                  name: `${prefix}myrole --color <new color>`,
-                  value: `Edits your role color.`,
-                  inline: true,
-                },
-              ],
-            })
-          );
-        });
-    }
+    // const customRoles = await this.client.db.keqingCustomRoles.find({
+    //   roleOwner: newMember.id,
+    // });
+    // const role = global.guild.roles.cache.get(
+    //   customRoles.map((x) => x.roleID).join('\n')
+    // );
+    // const prefix = this.client.commandHandler.prefix;
+    // if (!wasntSupporting && isSupporting) {
+    //   newMember
+    //     .send(
+    //       new Discord.MessageEmbed({
+    //         color: 'GREEN',
+    //         title: 'You have unlocked a new perk by being a patreon supporter!',
+    //         description: `You can now have a custom role you desire!`,
+    //         fields: [
+    //           {
+    //             name: `${prefix}myrole <role name>`,
+    //             value: `Creates a custom role with the given name.`,
+    //           },
+    //           {
+    //             name: `${prefix}myrole --name <new name>`,
+    //             value: `Edits your role name.`,
+    //             inline: true,
+    //           },
+    //           {
+    //             name: `${prefix}myrole --color <new color>`,
+    //             value: `Edits your role color.`,
+    //             inline: true,
+    //           },
+    //         ],
+    //       })
+    //     )
+    //     .catch(() => {
+    //       global.guild.channels.cache.get(channels.patronsOnlyChannel).send(
+    //         newMember,
+    //         new Discord.MessageEmbed({
+    //           color: 'GREEN',
+    //           title:
+    //             'You have unlocked a new perk by being a patreon supporter!',
+    //           description: `You can now have a custom role you desire!`,
+    //           fields: [
+    //             {
+    //               name: `${prefix}myrole <role name>`,
+    //               value: `Creates a custom role with the given name.`,
+    //             },
+    //             {
+    //               name: `${prefix}myrole --name <new name>`,
+    //               value: `Edits your role name.`,
+    //               inline: true,
+    //             },
+    //             {
+    //               name: `${prefix}myrole --color <new color>`,
+    //               value: `Edits your role color.`,
+    //               inline: true,
+    //             },
+    //           ],
+    //         })
+    //       );
+    //     });
+    // }
 
-    if (wasntSupporting && !isSupporting) {
-      newMember
-        .send(
-          new Discord.MessageEmbed({
-            color: 'RED',
-            description: `You lost your custom role due to expiration of your patreon support.`,
-          })
-        )
-        .then(async () => {
-          await this.client.db.keqingCustomRoles.deleteOne({
-            roleID: role.id,
-          });
-          if (!role) return;
-          role.delete('No more a patreon supporter.');
-        })
-        .catch((e) => {
-          return;
-        });
-    }
+    // if (wasntSupporting && !isSupporting) {
+    //   newMember
+    //     .send(
+    //       new Discord.MessageEmbed({
+    //         color: 'RED',
+    //         description: `You lost your custom role due to expiration of your patreon support.`,
+    //       })
+    //     )
+    //     .then(async () => {
+    //       await this.client.db.keqingCustomRoles.deleteOne({
+    //         roleID: role.id,
+    //       });
+    //       if (!role) return;
+    //       role.delete('No more a patreon supporter.');
+    //     })
+    //     .catch((e) => {
+    //       return;
+    //     });
+    // }
   }
 }
 
-// module.exports = GuildMemberUpdateListener;
+module.exports = GuildMemberUpdateListener;
