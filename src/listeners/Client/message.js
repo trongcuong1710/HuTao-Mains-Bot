@@ -95,28 +95,28 @@ class MessageListener extends Listener {
     });
 
     if (!huTaoQuotes) return;
-
     // if (huTaoQuotes)
     //   return message.channel.send(
     //     huTaoQuotes.embed
     //       ? new Discord.MessageEmbed(JSON.parse(huTaoQuotes.quote))
     //       : huTaoQuotes.quote
     //   );
+    else {
+      if (huTaoQuotes.embed)
+        return message.channel.send(
+          new Discord.MessageEmbed(JSON.parse(huTaoQuotes.quote))
+        );
 
-    if (huTaoQuotes.embed)
-      return message.channel.send(
-        new Discord.MessageEmbed(JSON.parse(huTaoQuotes.quote))
+      const target = global.guild.members.cache.get(
+        message.mentions.users.first().id
       );
-
-    const target = global.guild.members.cache.get(
-      message.mentions.users.first().id
-    );
-    if (!target) return;
-    if (huTaoQuotes.quote.includes('{mention}'))
-      return message.channel.send(
-        huTaoQuotes.quote.replace('{mention}', target.user.username)
-      );
-    return message.channel.send(huTaoQuotes.quote);
+      if (!target) return;
+      if (huTaoQuotes.quote.includes('{mention}'))
+        return message.channel.send(
+          huTaoQuotes.quote.replace('{mention}', target.user.username)
+        );
+      return message.channel.send(huTaoQuotes.quote);
+    }
   }
 }
 
