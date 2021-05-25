@@ -115,7 +115,8 @@ class MessageListener extends Listener {
       return message.channel.send(
         huTaoQuotes.quote.replace(
           '{mention}',
-          message.mentions.users.first().user.username
+          global.guild.members.cache.get(message.mentions.users.first()).user
+            .username
         )
       );
     return message.channel.send(
