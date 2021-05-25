@@ -124,6 +124,7 @@ class MessageListener extends Listener {
           ? huTaoQuotes.quote.replace(
               '{mention}',
               global.guild.members.cache.get(message.mentions.users.first().id)
+                .username
             )
           : 'Mention sumone!!'
       );
