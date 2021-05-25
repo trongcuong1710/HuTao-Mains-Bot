@@ -30,7 +30,7 @@ class MyClient extends AkairoClient {
     );
     this.commandHandler = new CommandHandler(this, {
       directory: './src/commands',
-      prefix: 'h!',
+      prefix: '!',
       automateCategories: true,
       allowMention: true,
       blockBots: true,
