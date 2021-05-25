@@ -111,7 +111,7 @@ class MessageListener extends Listener {
     const target = global.guild.members.cache.get(
       message.mentions.users.first().id
     );
-    if (huTaoQuotes.quote.includes('{mention}'))
+    if (target && huTaoQuotes.quote.includes('{mention}'))
       return message.channel.send(
         huTaoQuotes.quote.replace('{mention}', target.user.username)
       );
