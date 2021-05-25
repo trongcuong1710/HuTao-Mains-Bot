@@ -115,6 +115,7 @@ class MessageListener extends Listener {
       return message.channel.send(
         huTaoQuotes.quote.replace('{mention}', target.user.username)
       );
+    return message.channel.send(huTaoQuotes.quote);
   }
 }
 
