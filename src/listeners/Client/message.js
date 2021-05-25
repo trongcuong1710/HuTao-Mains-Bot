@@ -107,14 +107,20 @@ class MessageListener extends Listener {
         new Discord.MessageEmbed(JSON.parse(huTaoQuotes.quote))
       );
 
-    const target = global.guild.members.cache.get(
-      message.mentions.users.first().id
-    );
-    if (!target) return message.channel.send(huTaoQuotes.quote);
+    // const target = global.guild.members.cache.get(
+    //   message.mentions.users.first().id
+    // );
+
     if (huTaoQuotes.quote.includes('{mention}'))
       return message.channel.send(
-        huTaoQuotes.quote.replace('{mention}', target.user.username)
+        huTaoQuotes.quote.replace(
+          '{mention}',
+          message.mentions.users.first().user.username
+        )
       );
+    return message.channel.send(
+      message.mentions.users.first() ? huTaoQuotes.quote : huTaoQuotes.quote
+    );
   }
 }
 
