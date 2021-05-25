@@ -112,13 +112,22 @@ class MessageListener extends Listener {
     // );
 
     if (huTaoQuotes.quote.includes('{mention}'))
+      // return message.channel.send(
+      //   huTaoQuotes.quote.replace(
+      //     '{mention}',
+      //     global.guild.members.cache.get(message.mentions.users.first())
+      //       .username
+      //   )
+      // );
       return message.channel.send(
-        huTaoQuotes.quote.replace(
-          '{mention}',
-          global.guild.members.cache.get(message.mentions.users.first()).user
-            .username
-        )
+        message.mentions.users.first()
+          ? huTaoQuotes.quote.replace(
+              '{mention}',
+              global.guild.members.cache.get(message.mentions.users.first().id)
+            )
+          : 'Mention sumone!!'
       );
+
     return message.channel.send(
       message.mentions.users.first() ? huTaoQuotes.quote : huTaoQuotes.quote
     );
