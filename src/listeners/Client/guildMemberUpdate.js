@@ -38,7 +38,7 @@ class GuildMemberUpdateListener extends Listener {
 
     if (!wasntBoosting && isBoosting) {
       newMember.guild.channels.cache
-        .get('830700055811588142')
+        .get('852728601496518686')
         .send(`${newMember}, ${randomMessage}`, keqingLove);
       // await newMember.roles.add('843445348760158218'); // Boosted role (kqm)
     }
