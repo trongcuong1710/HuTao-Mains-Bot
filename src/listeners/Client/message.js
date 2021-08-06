@@ -69,7 +69,7 @@ class MessageListener extends Listener {
       return message.channel.send(
         new Discord.MessageEmbed({
           color: 'PURPLE',
-          description: `Oh! It seems like somebody slid into my DMs 😊\nIf you have a problem that needs an admin's attention, please message me again using the command \`k!ticket\` in order to open up a direct ticket with the administrators.`,
+          description: `Oh! It seems like somebody slid into my DMs 😊\nIf you have a problem that needs an admin's attention, please message me again using the command \`!ticket\` in order to open up a direct ticket with the administrators.`,
         })
       );
     }
