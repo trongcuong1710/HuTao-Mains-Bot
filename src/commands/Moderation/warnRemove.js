@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 var moment = require('moment');
 const channels = require('../../Constants/channels.json');
 
@@ -38,18 +38,19 @@ class RemoveWarnCommand extends Command {
     moment.locale('en');
     if (!args.member)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
-          description: `Please provide a user to remove their warn.`,
+          description: `Please specify a member.`,
         })
       );
     if (!args.warnID)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
-          description: `Please provide a warnID to remove from ${args.member}'s warns.`,
+          description: `Please specify a warnID.`,
         })
       );
+
     const permRoles = [
       '830700055539089457', // Admin
       '830700055539089456', // Mods
@@ -63,11 +64,13 @@ class RemoveWarnCommand extends Command {
           .filter((x) => permRoles.includes(x)).length === 0
       )
         return message.channel.send(
-          new Discord.MessageEmbed()
-            .setDescription("You can't do that with the permissions you have.")
-            .setColor(16711680)
+          new MessageEmbed({
+            color: 'RED',
+            description: "You can't do that with the permissions you have.",
+          })
         );
     }
+
     const warnReasonWas = await this.client.db.huTaoWarns.find({
       warnID: args.warnID,
     });
@@ -75,63 +78,43 @@ class RemoveWarnCommand extends Command {
       .deleteOne({ warnID: args.warnID })
       .then(async (c) => {
         await message.channel.send(
-          new Discord.MessageEmbed({
+          new MessageEmbed({
             color: 'GREEN',
-            description: `Removed **${args.warnID}** from ${args.member}'s warns.`,
+            description: `Removed **${args.warnID}** from ${args.member.user.tag}'s warns.`,
           })
         );
         await this.client.channels.cache
-          .get(channels.modLogChannel)
+          .get(channels.punishmentLogsChannel)
           .send(
-            new Discord.MessageEmbed({
+            new MessageEmbed({
               color: 'RED',
               title: `Member Warn Removed`,
-              description: `Removed ${args.warnID} from ${args.member.user.username}'s warns.`,
-              fields: [
-                { name: `Moderator`, value: message.member, inline: true },
-                { name: `Member`, value: args.member, inline: true },
-                {
-                  name: `Warn Reason Was`,
-                  value: warnReasonWas.map((x) => x.reason).join('\n'),
-                  inline: false,
-                },
-                {
-                  name: `Removed Warn At`,
-                  value: moment().format('LLLL'),
-                  inline: true,
-                },
-              ],
+              description: `**Offender**: ${
+                args.member.user.tag
+              }\n**Responsible Staff**: ${
+                message.author.tag
+              }\n**Reason Was**: ${warnReasonWas
+                .map((x) => x.reason)
+                .join('\n')}`,
+              footer: { text: `ID: ${args.member.id}` },
+              timestamp: new Date(),
+            })
+          );
+        args.member
+          .send(
+            new MessageEmbed({
+              color: 'RED',
+              title: `A warn has been removed you in ${global.guild.name}.`,
+              description: `**Responsible Staff**: ${
+                message.author.tag || message.author.username || message.author
+              }\n**Reason was**: ${warnReasonWas
+                .map((x) => x.reason)
+                .join('\n')}`,
+              timestamp: new Date(),
             })
           )
-          .then(async (msg) => {
-            await args.member
-              .send(
-                new Discord.MessageEmbed({
-                  color: 'GREEN',
-                  title: `Warn Removed`,
-                  description: `One of your warns have been removed in ${message.guild.name}.`,
-                  fields: [
-                    {
-                      name: `Moderator`,
-                      value: message.member,
-                      inline: true,
-                    },
-                    {
-                      name: `Warn Reason Was`,
-                      value: warnReasonWas.reason,
-                      inline: false,
-                    },
-                    {
-                      name: `Removed Warned At`,
-                      value: moment().format('LLLL'),
-                      inline: true,
-                    },
-                  ],
-                })
-              )
-              .catch(async (e) => {
-                return;
-              });
+          .catch((_) => {
+            return;
           });
       });
   }

@@ -24,13 +24,13 @@ class HelpCommand extends Command {
       return message.channel.send(
         new Discord.MessageEmbed({
           color: 'RED',
-          description: `Please specify a command to view more info about.`,
+          description: `In development.\n\n[You can donate my dumb programmer here!](https://ko-fi.com/zylasden)`,
         })
       );
 
     return message.channel.send(
       new Discord.MessageEmbed({
-        color: 'PURPLE',
+        color: 'RED',
         fields: [
           {
             name: `Command`,
@@ -50,7 +50,7 @@ class HelpCommand extends Command {
           {
             name: `Usage`,
             value: `\`${prefix + args.command.description.usage}\``,
-            inline: true,
+            inline: false,
           },
           {
             name: `Description`,

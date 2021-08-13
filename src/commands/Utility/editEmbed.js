@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 class EditEmbedCommand extends Command {
   constructor() {
@@ -11,7 +11,7 @@ class EditEmbedCommand extends Command {
       args: [
         {
           id: 'messageID',
-          type: 'message',
+          type: 'guildMessage',
         },
         {
           id: 'newMessage',
@@ -40,7 +40,7 @@ class EditEmbedCommand extends Command {
           .filter((x) => permRoles.includes(x)).length === 0
       )
         return message.channel.send(
-          new Discord.MessageEmbed().setDescription(
+          new MessageEmbed().setDescription(
             "You can't do that with the permissions you have."
           )
         );
@@ -48,19 +48,40 @@ class EditEmbedCommand extends Command {
 
     if (!args.messageID)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           description: `You must provide a message ID that is sent by **me**.`,
         })
       );
     if (!args.newMessage)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           description: `You must provide a new embed to replace the old one.`,
         })
       );
-    args.messageID
-      .edit(new Discord.MessageEmbed(JSON.parse(args.newMessage)))
-      .catch(async (e) => await catchError(e, message, this.id));
+
+    if (args.messageID.partial) {
+      args.messageID
+        .fetch()
+        .then(async (fullMessage) => {
+          await fullMessage
+            .edit(new MessageEmbed(JSON.parse(args.newMessage)))
+            .then(async () => {
+              message.react('834139708736667680');
+            });
+        })
+        .catch((error) => {
+          message.channel.send(
+            'Something went wrong when fetching the message: ',
+            error
+          );
+        });
+    } else {
+      await args.messageID
+        .edit(new MessageEmbed(JSON.parse(args.newMessage)))
+        .then(async () => {
+          message.react('834139708736667680');
+        });
+    }
   }
 }
 

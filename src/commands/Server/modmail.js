@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed, MessageAttachment } = require('discord.js');
 const moment = require('moment');
 const channels = require('../../Constants/channels.json');
 const roles = require('../../Constants/roles.json');
@@ -12,7 +12,7 @@ class ModmailCommand extends Command {
       category: 'Server',
       channel: 'dm',
       description: {
-        description: 'Contact the KQM Admins.',
+        description: 'Contact the Hu Tao Mains Staff team.',
         usage: 'ticket',
       },
     });
@@ -20,259 +20,135 @@ class ModmailCommand extends Command {
 
   async exec(message) {
     moment.locale('en');
-    const fetchedMember = await this.client.db.huTaoIgnoreList.findOne({
+    let reasoning;
+    const isIgnored = await this.client.db.huTaoIgnoreList.findOne({
       member_id: message.author.id,
     });
-    if (fetchedMember) return;
-    if (
-      !(await this.client.db.huTaoModmail.findOne({
-        member_id: message.author.id,
-      }))
-    ) {
-      await this.client.db.huTaoModmail
-        .create({
-          member_id: message.author.id,
+    if (isIgnored) return;
+
+    const hasTicket = await this.client.db.huTaoModmail.findOne({
+      member_id: message.author.id,
+    });
+    if (hasTicket) return;
+
+    const admins = global.guild.roles.cache.get(roles.adminRole);
+    const mods = global.guild.roles.cache.get(roles.modRole);
+
+    message.channel
+      .send(
+        new MessageEmbed({
+          color: 'RED',
+          title: `What is your reasoning?`,
+          description: `Please tell me what is the reasoning behind this ticket you're trying to open.`,
         })
-        .then(() => {
-          message.author.send(
-            new Discord.MessageEmbed({
-              color: 'GREEN',
-              title: `Ticket Created!`,
-              description: `Please only use this if you have a question ONLY the administrators are able to answer and not for in-game Genshin questions.`,
-              fields: [
-                {
-                  name: 'Images',
-                  value: `You can send image links and it will be shown to staff as usual.`,
-                },
-                {
-                  name: 'Attachments',
-                  value: `You can send image attachments only and it will be shown to staff as usual. However if you don't say anything with the attachment your image attachment won't be shown.`,
-                },
-              ],
-              footer: {
-                text: `Please wait for the staff to close the ticket.`,
-              },
-            })
-          );
-          global.guild.channels
-            .create(`${message.author.username}-ticket`, {
+      )
+      .then(async () => {
+        const filter = (m) => m.author.id === message.author.id;
+
+        const collector = message.channel.createMessageCollector(filter, {
+          max: 1,
+        });
+        collector.on('collect', (m) => {
+          reasoning = m.content;
+        });
+        collector.on('end', async (collected) => {
+          await global.guild.channels
+            .create(`${message.author.username}`, {
               reason: `New ticket created by ${message.author.username}`,
               nsfw: true,
               type: 'text',
-              parent: roles.modMailParentRole,
+              parent: '844172518104760330',
               permissionOverwrites: [
                 {
-                  id: roles.adminRole, // Admin
+                  id: '830700055539089457', // Admin
                   allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
+                },
+                {
+                  id: '830700055539089456', // Mods
+                  allow: ['VIEW_CHANNEL', 'SEND_MESSAGES'],
+                },
+                {
+                  id: '830992256348717096', // muted
+                  deny: ['SEND_MESSAGES', 'VIEW_CHANNEL'],
+                },
+                {
+                  id: message.author.id, // person who created the ticket
+                  allow: ['SEND_MESSAGES', 'VIEW_CHANNEL'],
                 },
                 {
                   id: '830700055451271188', // everyone
                   deny: ['VIEW_CHANNEL'],
                 },
-                {
-                  id: roles.muteRole, // muted
-                  deny: ['SEND_MESSAGES', 'VIEW_CHANNEL'],
-                },
               ],
             })
-            .then(async (c) => {
-              const fetchedUser = await this.client.db.huTaoModmail.findOne({
+            .then(async (channel) => {
+              channel.setTopic(reasoning, 'Modmail Reason');
+              await this.client.db.huTaoModmail.create({
                 member_id: message.author.id,
+                channel_id: channel.id,
               });
-              const channel = global.guild.channels.cache.get(c.id);
-              const user = this.client.users.cache.get(fetchedUser.member_id);
-              const dmcFilter = (m) => m.content;
-              const dmCollector =
-                user.dmChannel.createMessageCollector(dmcFilter);
-              const ticketChannelFilter = (m) => m.content;
-              const channelCollector =
-                channel.createMessageCollector(ticketChannelFilter);
-              const filter = { member_id: message.author.id };
-              const update = { channel_id: c.id };
-              await this.client.db.huTaoModmail.findOneAndUpdate(
-                filter,
-                update
-              );
-              const admins = global.guild.roles.cache.get(roles.adminRole);
-              channel.send(
-                `${admins}`,
-                new Discord.MessageEmbed({
+
+              await message.channel.send(
+                new MessageEmbed({
                   color: 'GREEN',
-                  title: `${user.username}-${user.id} created a ticket!`,
+                  title: `Ticket Created!`,
+                  description: `Please only use this if you have a question ONLY the administrators are able to answer and not for in-game Genshin questions.\n\nYour channel: <#${channel.id}>`,
+                  footer: {
+                    text: `Please wait for the staff to close the ticket.`,
+                  },
                 })
               );
-              channelCollector.on('collect', async (m) => {
+              await channel.send(
+                `Attention, ${admins} and ${mods}!`,
+                new MessageEmbed({
+                  color: 'RED',
+                  description: `**${
+                    message.author.tag ||
+                    message.author.user.username ||
+                    message.author
+                  }-(${
+                    message.author.id
+                  })** has created a ticket.\nTheir reason for it is: **${reasoning}**.`,
+                })
+              );
+
+              const filter = (m) => m.content;
+              const collector = channel.createMessageCollector(filter);
+
+              collector.on('collect', async (m) => {
                 if (m.author.bot) return;
-                if (m.content == 'close ticket') {
-                  try {
-                    m.delete();
-                    await this.client.db.huTaoModmail
-                      .findOneAndRemove({
-                        member_id: user.id,
-                      })
-                      .then(async () => {
-                        await channel.delete().then(() => {
-                          user
-                            .send(
-                              new Discord.MessageEmbed({
-                                color: 'RED',
-                                title: `Thread is now closed`,
-                                description: `Thank you for contacting the KQM Admins. We hope we've addressed your query!`,
-                                timestamp: moment().format('LLLL'),
-                              })
-                            )
-                            .catch((e) => {
-                              return;
-                            });
-                          channelCollector.stop();
-                          dmCollector.stop();
-                        });
-                      });
-                  } catch (_) {
-                    return;
-                  }
-                  return;
-                }
 
-                let attachmentRegex =
-                  /([0-9a-zA-Z\._-]+.(png|PNG|gif|GIF|jp[e]?g|JP[E]?G))/g;
-                if (m.attachments.size > 0) {
-                  if (
-                    m.attachments.every((attachment) => {
-                      const isImage = attachmentRegex.exec(attachment.name);
-                      return isImage;
-                    })
-                  )
-                    return user
-                      .send(
-                        new Discord.MessageEmbed({
-                          color: 'GREEN',
-                          title: `${m.author.username} said:`,
-                          description: `${m.content}`,
-                          image: {
-                            url: m.attachments.array()[0].attachment,
-                          },
-                        })
-                      )
-                      .catch((e) => {
-                        return;
-                      });
-                }
-
-                var imgRegex =
-                  /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi;
-                const isIncludingLink = imgRegex.exec(m.content);
-
-                if (isIncludingLink)
-                  return user
-                    .send(
-                      new Discord.MessageEmbed({
-                        color: 'GREEN',
-                        title: `${m.author.username} said:`,
-                        description: `${m.content.replace(
-                          isIncludingLink[0],
-                          ' '
-                        )}`,
-                        image: { url: isIncludingLink[0] },
-                      })
-                    )
-                    .catch((e) => {
-                      return;
-                    });
-                user
-                  .send(
-                    new Discord.MessageEmbed({
-                      color: 'GREEN',
-                      title: `${m.author.username} said:`,
-                      description: `${m.content}`,
-                    })
-                  )
-                  .catch((e) => {
-                    return;
+                if (m.content === 'close ticket') {
+                  await this.client.db.huTaoModmail.deleteOne({
+                    member_id: message.author.id,
                   });
-              });
-
-              dmCollector.on('collect', (m) => {
-                if (m.author.bot) return;
-
-                let attachmentRegex =
-                  /([0-9a-zA-Z\._-]+.(png|PNG|gif|GIF|jp[e]?g|JP[E]?G))/g;
-                if (m.attachments.size > 0) {
-                  if (
-                    m.attachments.every((attachment) => {
-                      const isImage = attachmentRegex.exec(attachment.name);
-                      return isImage;
-                    })
-                  )
-                    return channel.send(
-                      new Discord.MessageEmbed({
-                        color: 'GREEN',
-                        title: `${m.author.username} said:`,
-                        description: `${m.content}`,
-                        image: {
-                          url: m.attachments.array()[0].attachment,
-                        },
-                      })
+                  await collector.stop();
+                  await channel.messages.fetch().then(async (messages) => {
+                    const logs = messages
+                      .filter((m) => m.author.id != '836765323553144862')
+                      .sort(
+                        (user, admin) =>
+                          user.createdTimestamp - admin.createdTimestamp
+                      )
+                      .map((x) => `${x.author.username}: ${x.content}`)
+                      .join('\n');
+                    const modMailLogsChannel = guild.channels.cache.get(
+                      channels.modMailLogsChannel
                     );
+                    modMailLogsChannel.send(
+                      `Ticket for ${message.author.username} is closed, read below for logs.`,
+                      new MessageAttachment(
+                        Buffer.from(logs),
+                        `${message.author.username}-logs.txt`
+                      )
+                    );
+                  });
+                  await channel.delete();
                 }
-
-                var imgRegex =
-                  /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi;
-                const isIncludingLink = imgRegex.exec(m.content);
-
-                if (isIncludingLink)
-                  return channel.send(
-                    new Discord.MessageEmbed({
-                      color: 'GREEN',
-                      title: `${m.author.username} said:`,
-                      description: `${m.content.replace(
-                        isIncludingLink[0],
-                        ' '
-                      )}`,
-                      image: { url: isIncludingLink[0] },
-                    })
-                  );
-
-                channel.send(
-                  new Discord.MessageEmbed({
-                    color: 'GREEN',
-                    title: `${m.author.username} said:`,
-                    description: `${m.content}`,
-                  })
-                );
               });
-              const channelPromise = new Promise((resolve) =>
-                channelCollector.once('end', resolve)
-              );
-              const dmPromise = new Promise((resolve) =>
-                dmCollector.once('end', resolve)
-              );
-              const channelCollection = await channelPromise;
-              const dmCollection = await dmPromise;
-              const merged = channelCollection.concat(dmCollection);
-              merged.sort(
-                (channelContent, dmContent) =>
-                  channelContent.createdTimestamp - dmContent.createdTimestamp
-              );
-              const logs = merged
-                .map((x) => `${x.author.username}: ${x.content}`)
-                .join('\n');
-              const modMailLogsChannel = guild.channels.cache.get(
-                channels.modMailLogsChannel
-              );
-              modMailLogsChannel.send(
-                `Thread for ${user.username} is closed, read below for logs.`,
-                new Discord.MessageAttachment(
-                  Buffer.from(logs),
-                  `${user.username}-logs.txt`
-                )
-              );
             });
         });
-    } else {
-      return;
-    }
+      });
   }
 }
-
 module.exports = ModmailCommand;

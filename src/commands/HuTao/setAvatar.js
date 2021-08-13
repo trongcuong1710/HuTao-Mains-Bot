@@ -35,7 +35,6 @@ class SetAvatarCommand extends Command {
 
     const permRoles = [
       '830700055539089457', // Admin
-      '830700055539089456', // Mods
       '831001258806345728', // 76th Funeral Director (Zyla)
     ];
     var i;
@@ -53,28 +52,15 @@ class SetAvatarCommand extends Command {
     }
 
     await this.client.user.setAvatar(args.avatarURL).then(() => {
-      message.channel
-        .send(
-          new Discord.MessageEmbed({
-            color: 1638144,
-            description: 'My new avatar is now:',
-            image: {
-              url: args.avatarURL,
-            },
-          })
-        )
-        .then(() => {
-          this.client.channels.cache.get(channels.modLogChannel).send(
-            new Discord.MessageEmbed({
-              color: 1638144,
-              title: `My Avatar Changed`,
-              description: `New avatar:\nChanged at: ${moment().format(
-                'LLLL'
-              )}`,
-              image: { url: args.avatarURL },
-            })
-          );
-        });
+      message.channel.send(
+        new Discord.MessageEmbed({
+          color: 1638144,
+          description: 'My new avatar is now:',
+          image: {
+            url: args.avatarURL,
+          },
+        })
+      );
     });
   }
 }

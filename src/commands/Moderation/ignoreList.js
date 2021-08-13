@@ -28,25 +28,27 @@ class IgnoreListCommand extends Command {
           .filter((x) => permRoles.includes(x)).length === 0
       )
         return message.channel.send(
-          new Discord.MessageEmbed()
-            .setDescription("You can't do that with the permissions you have.")
-            .setColor(16711680)
+          new MessageEmbed({
+            color: 'RED',
+            description: "You can't do that with the permissions you have.",
+          })
         );
     }
-    const blacklists = await this.client.db.huTaoIgnoreList.find();
 
-    if (!blacklists.length)
+    const ignoreList = await this.client.db.huTaoIgnoreList.find();
+
+    if (!ignoreList.length)
       return message.channel.send(
         new Discord.MessageEmbed({
-          color: 16711680,
+          color: 'RED',
           description: `There are no ignored members in the database.`,
         })
       );
     message.channel.send(
       new Discord.MessageEmbed({
-        color: 65280,
+        color: 'RED',
         title: `List of Ignored Members`,
-        description: blacklists
+        description: ignoreList
           .map(
             (x) =>
               `**Ignored Member:** ${x.member_id}\n**Ignored By**: ${message.author}`

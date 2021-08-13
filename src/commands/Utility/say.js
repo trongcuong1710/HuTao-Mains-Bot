@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 class SayCommand extends Command {
   constructor() {
@@ -8,6 +8,7 @@ class SayCommand extends Command {
       ownerOnly: false,
       category: 'Utility',
       channel: 'guild',
+      userPermissions: 'MANAGE_MESSAGES',
       args: [
         {
           id: 'channel',
@@ -38,35 +39,16 @@ class SayCommand extends Command {
   async exec(message, args) {
     if (!args.channel)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           description: `Please supply a channel to send the message.`,
         })
       );
     if (!args.message)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           description: `Please supply a message to send to the channel.`,
         })
       );
-
-    const permRoles = [
-      '830700055539089457', // Admin
-      '830700055539089456', // Mods
-      '831001258806345728', // 76th Funeral Director (Zyla)
-    ];
-    var i;
-    for (i = 0; i <= permRoles.length; i++) {
-      if (
-        message.member.roles.cache
-          .map((x) => x.id)
-          .filter((x) => permRoles.includes(x)).length === 0
-      )
-        return message.channel.send(
-          new Discord.MessageEmbed().setDescription(
-            "You can't do that with the permissions you have."
-          )
-        );
-    }
     args.channel.send(args.message);
   }
 }

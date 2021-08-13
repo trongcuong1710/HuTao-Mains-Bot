@@ -1,4 +1,5 @@
 const { Command } = require('discord-akairo');
+const { MessageEmbed } = require('discord.js');
 const { Random } = require('random-discord');
 const random = new Random();
 
@@ -6,6 +7,8 @@ class CryCommand extends Command {
   constructor() {
     super('cry', {
       aliases: ['cry'],
+      ownerOnly: false,
+      category: 'Socialism',
       channel: 'guild',
       cooldown: 30000,
       description: {
@@ -15,9 +18,17 @@ class CryCommand extends Command {
     });
   }
 
-  async exec(message) {
+  async exec(message, args) {
     let data = await random.getAnimeImgURL('cry');
-    message.channel.send(data);
+    return message.channel.send(
+      new MessageEmbed({
+        color: 'RED',
+        title: `${
+          message.author.username || message.author.tag || message.author
+        } is crying, how sad.`,
+        image: { url: data },
+      })
+    );
   }
 }
 

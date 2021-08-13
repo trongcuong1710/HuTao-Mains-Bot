@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 class EmbedCommand extends Command {
   constructor() {
@@ -16,33 +16,35 @@ class EmbedCommand extends Command {
   }
 
   async exec(message, args) {
-    const permRoles = [
+    const roles = [
       '830700055539089457', // Admin
       '830700055539089456', // Mods
       '831001258806345728', // 76th Funeral Director (Zyla)
     ];
     var i;
-    for (i = 0; i <= permRoles.length; i++) {
+    for (i = 0; i <= roles.length; i++) {
       if (
         message.member.roles.cache
           .map((x) => x.id)
-          .filter((x) => permRoles.includes(x)).length === 0
+          .filter((x) => roles.includes(x)).length === 0
       )
-        return message.channel.send(
-          new Discord.MessageEmbed().setDescription(
-            "You can't do that with the permissions you have."
-          )
+        return await message.channel.send(
+          new MessageEmbed({
+            color: 'RED',
+            description: "You can't do that with the permissions you have.",
+          })
         );
     }
+
     try {
       message.channel.send(
-        new Discord.MessageEmbed(
+        new MessageEmbed(
           JSON.parse(message.content.split(' ').splice(1).join(' '))
         )
       );
     } catch (e) {
       await message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `Improper input.`,
         })

@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const channels = require('../../Constants/channels.json');
 const moment = require('moment');
 
@@ -27,39 +27,41 @@ class RemoveQuoteCommand extends Command {
     moment.locale('en');
     if (!args.quote)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           description: `Please supply a quote name to remove from the database.`,
         })
       );
-    const permRoles = [
+    const roles = [
       '830700055539089457', // Admin
       '830700055539089456', // Mods
       '831001258806345728', // 76th Funeral Director (Zyla)
     ];
     var i;
-    for (i = 0; i <= permRoles.length; i++) {
+    for (i = 0; i <= roles.length; i++) {
       if (
         message.member.roles.cache
           .map((x) => x.id)
-          .filter((x) => permRoles.includes(x)).length === 0
+          .filter((x) => roles.includes(x)).length === 0
       )
-        return message.channel.send(
-          new Discord.MessageEmbed().setDescription(
-            "You can't do that with the permissions you have."
-          )
+        return await message.channel.send(
+          new MessageEmbed({
+            color: 'RED',
+            description: "You can't do that with the permissions you have.",
+          })
         );
     }
-    const quotes = await this.client.db.huTaoQuotes.findOne({
+
+    const quotes = await this.client.db.eulaQuotes.findOne({
       quoteName: args.quote,
     });
-    if (await this.client.db.huTaoQuotes.findOne({ quoteName: args.quote })) {
-      await this.client.db.huTaoQuotes
+    if (await this.client.db.eulaQuotes.findOne({ quoteName: args.quote })) {
+      await this.client.db.eulaQuotes
         .deleteOne({
           quoteName: args.quote,
         })
         .then(() => {
-          this.client.channels.cache.get(channels.dbLogsChannel).send(
-            new Discord.MessageEmbed({
+          this.client.channels.cache.get(channels.databaseLogsChannel).send(
+            new MessageEmbed({
               color: 'RED',
               title: `Quote Removed`,
               description: `**${args.quote}** has now been removed.`,
@@ -93,12 +95,12 @@ class RemoveQuoteCommand extends Command {
         });
     } else
       return message.channel.send(
-        new Discord.MessageEmbed().setDescription(
+        new MessageEmbed().setDescription(
           `**${args.quote}** doesn't exist in the database!`
         )
       );
     message.channel.send(
-      new Discord.MessageEmbed({
+      new MessageEmbed({
         color: 'RED',
         description: `**${args.quote}** has now been removed.`,
         footer: { text: 'View logs for details.' },

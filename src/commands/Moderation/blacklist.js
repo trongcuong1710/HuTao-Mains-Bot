@@ -6,7 +6,7 @@ const channels = require('../../Constants/channels.json');
 class BlacklistCommand extends Command {
   constructor() {
     super('blacklist', {
-      aliases: ['blacklist', 'bl'],
+      aliases: ['blacklist'],
       category: 'Moderation',
       channel: 'guild',
       args: [
@@ -37,25 +37,28 @@ class BlacklistCommand extends Command {
       '831001258806345728', // 76th Funeral Director (Zyla)
     ];
     var i;
-    for (i = 0; i <= permRoles.length; i++) {
+    for (i = 0; i <= roles.length; i++) {
       if (
         message.member.roles.cache
           .map((x) => x.id)
-          .filter((x) => permRoles.includes(x)).length === 0
+          .filter((x) => roles.includes(x)).length === 0
       )
-        return message.channel.send(
-          new Discord.MessageEmbed()
-            .setDescription("You can't do that with the permissions you have.")
-            .setColor(16711680)
+        return await message.channel.send(
+          new Discord.MessageEmbed({
+            color: 'RED',
+            description: "You can't do that with the permissions you have.",
+          })
         );
     }
+
     if (!args.channel)
       return message.channel.send(
         new Discord.MessageEmbed({
-          color: 16711680,
-          description: `Please supply a channel to blacklist/unblacklist.`,
+          color: 'RED',
+          description: `Please specify a channel.`,
         })
       );
+
     if (
       !(await this.client.db.huTaoBlacklists.findOne({
         channel_id: args.channel,
@@ -74,24 +77,13 @@ class BlacklistCommand extends Command {
               footer: { text: `Use the command again to unblacklist.` },
             })
           );
-          this.client.channels.cache.get(channels.dbLogsChannel).send(
+          this.client.channels.cache.get(channels.databaseLogsChannel).send(
             new Discord.MessageEmbed({
               color: 'GREEN',
               title: `Channel Blacklist`,
-              fields: [
-                {
-                  name: 'Channel',
-                  value: args.channel,
-                },
-                {
-                  name: 'Responsible Staff',
-                  value: message.member,
-                },
-                {
-                  name: 'Blacklisted At',
-                  value: moment().format('LLLL'),
-                },
-              ],
+              description: `**Channel**: ${args.channel}\n**Responsible Staff**: ${message.author.tag}`,
+              footer: { text: `Channel ID: ${args.channel.id}` },
+              timestamp: new Date(),
             })
           );
         });
@@ -101,33 +93,24 @@ class BlacklistCommand extends Command {
           channel_id: args.channel,
         })
         .then(async () => {
-          message.channel.send(
+          await message.channel.send(
             new Discord.MessageEmbed({
               color: 'GREEN',
               description: `${args.channel} is not blacklisted anymore.`,
               footer: { text: `Use the command again to blacklist.` },
             })
           );
-          this.client.channels.cache.get(channels.dbLogsChannel).send(
-            new Discord.MessageEmbed({
-              color: 'RED',
-              title: `Channel Unblacklist`,
-              fields: [
-                {
-                  name: 'Channel',
-                  value: args.channel,
-                },
-                {
-                  name: 'Responsible Staff',
-                  value: message.member,
-                },
-                {
-                  name: 'Unblacklisted At',
-                  value: moment().format('LLLL'),
-                },
-              ],
-            })
-          );
+          return await this.client.channels.cache
+            .get(channels.databaseLogsChannel)
+            .send(
+              new Discord.MessageEmbed({
+                color: 'RED',
+                title: `Channel Unblacklist`,
+                description: `**Channel**: ${args.channel}\n**Responsible Staff**: ${message.author.tag}`,
+                footer: { text: `Channel ID: ${args.channel.id}` },
+                timestamp: new Date(),
+              })
+            );
         });
   }
 }

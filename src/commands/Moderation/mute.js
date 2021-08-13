@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const roles = require('../../Constants/roles.json');
 const channels = require('../../Constants/channels.json');
 const ms = require('ms');
@@ -10,10 +10,11 @@ class MuteCommand extends Command {
   constructor() {
     super('mute', {
       aliases: ['mute'],
-      clientPermissions: ['MUTE_MEMBERS'],
+      clientPermissions: 'MUTE_MEMBERS',
+      userPermissions: 'MUTE_MEMBERS',
       description: {
         description: 'Mute a member.',
-        usage: 'mute <member> <duration> <reason>',
+        usage: 'mute <member> <duration> [reason]',
       },
       args: [
         {
@@ -42,30 +43,12 @@ class MuteCommand extends Command {
   }
 
   async exec(message, args) {
-    const permRoles = [
-      '830700055539089457', // Admin
-      '830700055539089456', // Mods
-      '831001258806345728', // 76th Funeral Director (Zyla)
-    ];
-    var i;
-    for (i = 0; i <= permRoles.length; i++) {
-      if (
-        message.member.roles.cache
-          .map((x) => x.id)
-          .filter((x) => permRoles.includes(x)).length === 0
-      )
-        return message.channel.send(
-          new Discord.MessageEmbed()
-            .setDescription("You can't do that with the permissions you have.")
-            .setColor(16711680)
-        );
-    }
     moment.locale('en');
     const muteRole = message.guild.roles.cache.get(roles.muteRole);
 
     if (!args.member) {
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `I couldn't find the user.`,
         })
@@ -73,14 +56,14 @@ class MuteCommand extends Command {
     }
     if (args.member.id === message.member.id)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `You can't silence yourself!`,
         })
       );
     if (args.member === message.guild.me)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `You can't silence me!`,
         })
@@ -91,26 +74,17 @@ class MuteCommand extends Command {
       message.member.roles.highest.position
     )
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `You can't silence someone with an equal or higher role!`,
         })
       );
 
-    if (!args.duration) {
-      return message.channel.send(
-        new Discord.MessageEmbed({
-          color: 'RED',
-          description: `Please enter a length of time of 14 days or less.`,
-        })
-      );
-    }
-
     let duration = ms(args.duration);
     if (!duration || duration > 1209600000)
       // Cap at 14 days, larger than 24.8 days causes integer overflow
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: 'Please enter a length of time of 14 days or less.',
         })
@@ -121,7 +95,7 @@ class MuteCommand extends Command {
 
     if (args.member.roles.cache.has(muteRole))
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `${args.member} is already muted.`,
         })
@@ -133,89 +107,70 @@ class MuteCommand extends Command {
         unmuteDate: Date.now() + duration,
       });
       message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'GREEN',
-          description: `Successful mute!`,
-          fields: [
-            { name: 'Member', value: args.member },
-            {
-              name: 'Duration',
-              value: prettyMilliseconds(duration, { verbose: true }),
-            },
-          ],
+          description: `**${message.author.tag}** muted **${
+            args.member.user.tag
+          }** for ${prettyMilliseconds(duration, { verbose: true })}`,
         })
       );
-      args.member.send(
-        new Discord.MessageEmbed({
-          color: 'RED',
-          description: `You have now been muted in ${global.guild.name}.`,
-          fields: [
-            { name: `Moderator`, value: message.member, inline: true },
-            {
-              name: `Duration`,
-              value: `\`${prettyMilliseconds(duration, {
-                verbose: true,
-              })}\``,
-              inline: true,
-            },
-            { name: `Reason`, value: args.reason, inline: true },
-            {
-              name: `Muted At`,
-              value: moment().format('LLLL'),
-              inline: true,
-            },
-          ],
-        })
-      );
-      this.client.channels.cache.get(channels.modLogChannel).send(
-        new Discord.MessageEmbed({
-          color: 'RED',
-          title: `Member Muted`,
-          description: `${
-            args.member
-          } has now been muted for **${prettyMilliseconds(duration, {
+      args.member
+        .send(
+          new MessageEmbed({
+            color: 'RED',
+            title: `You have been muted in ${global.guild.name}.`,
+            description: `**Responsible Staff**: ${
+              message.author.tag || message.author.username || message.author
+            }\n**Reason**: ${args.reason}\n**Duration**: ${prettyMilliseconds(
+              duration,
+              { verbose: true }
+            )}`,
+            timestamp: new Date(),
+          })
+        )
+        .catch((_) => {
+          return;
+        });
+      this.client.channels.cache.get(channels.punishmentLogsChannel).send(
+        new MessageEmbed({
+          color: 'GREEN',
+          title: `Muted`,
+          description: `**Offender**: ${args.member.user.tag}\n**Reason**: ${
+            args.reason
+          }\n**Duration**: ${prettyMilliseconds(duration, {
             verbose: true,
-          })}**.`,
-          fields: [
-            { name: `Moderator`, value: message.member, inline: true },
-            { name: `Member`, value: args.member, inline: true },
-            {
-              name: `Duration`,
-              value: `\`${prettyMilliseconds(duration, {
-                verbose: true,
-              })}\``,
-              inline: true,
-            },
-            { name: `Reason`, value: args.reason, inline: true },
-            {
-              name: `Muted At`,
-              value: moment().format('LLLL'),
-              inline: true,
-            },
-          ],
+          })}\n**Responsible Staff**: ${message.author.tag}`,
+          footer: { text: `ID: ${args.member.id}` },
+          timestamp: new Date(),
         })
       );
     });
 
-    args.member.timeout = message.client.setTimeout(async () => {
+    setTimeout(async () => {
       if (args.member.roles.cache.has(muteRole.id)) {
         await args.member.roles.remove(muteRole).then(async () => {
           await this.client.db.huTaoMutes.deleteOne({
             member_id: args.member.id,
           });
-          args.member.send(
-            new Discord.MessageEmbed({
+          this.client.channels.cache.get(channels.punishmentLogsChannel).send(
+            new MessageEmbed({
               color: 'GREEN',
-              description: `You have been unmuted in ${global.guild.name}`,
-            })
-          );
-          this.client.channels.cache.get(channels.modLogChannel).send(
-            new Discord.MessageEmbed({
-              color: 'GREEN',
-              title: `Member Unmuted (Auto Unmute)`,
+              title: `Member Unmuted`,
               description: `${args.member} has been unmuted.`,
+              timestamp: new Date(),
             })
           );
+          args.member
+            .send(
+              new MessageEmbed({
+                color: 'RED',
+                description: `You have been unmuted in ${global.guild.name}.`,
+                timestamp: new Date(),
+              })
+            )
+            .catch((_) => {
+              return;
+            });
         });
       }
       return;

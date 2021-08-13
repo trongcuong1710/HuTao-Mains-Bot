@@ -7,14 +7,13 @@ class RebootCommand extends Command {
       aliases: ['reboot'],
       description: { description: 'Reboots the bot.', usage: 'reboot' },
       ownerOnly: false,
-      category: 'Keqing',
+      category: 'Hu Tao',
     });
   }
 
   async exec(message) {
     const permRoles = [
       '830700055539089457', // Admin
-      // '830700055539089456', // Mods
       '831001258806345728', // 76th Funeral Director (Zyla)
     ];
     var i;
@@ -34,7 +33,7 @@ class RebootCommand extends Command {
     await message.channel
       .send(
         new MessageEmbed({
-          color: 'PURPLE',
+          color: 'RED',
           description: `I'll be right back!`,
         })
       )

@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const { evaluate, string } = require('mathjs');
 
 class CalculateCommand extends Command {
@@ -13,6 +13,7 @@ class CalculateCommand extends Command {
         {
           id: 'input',
           type: 'string',
+          match: 'rest',
         },
       ],
       description: {
@@ -25,32 +26,38 @@ class CalculateCommand extends Command {
   async exec(message, args) {
     if (!args.input)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description:
-            'Please input a mathematical operation or conversion such as "1 km to m" (yes with quotes)',
+            'Please input a mathematical operation or conversion such as 2 + 2 (which is 5 (i am a giga brain (yeah (how about that (b*tch)))))',
         })
       );
-
-    message.channel
-      .send(
-        this.client.util.embed().addFields([
-          {
-            name: 'Input:',
-            value: string(args.input),
-          },
-          {
-            name: 'Output:',
-            value: string(evaluate(args.input)),
-          },
-        ])
-      )
-      .catch(
-        async (e) =>
-          await message.channel.send(
-            new Discord.MessageEmbed({ color: 'RED', description: e.message })
+    try {
+      message.channel.send(
+        this.client.util
+          .embed()
+          .setColor('BLUE')
+          .setAuthor(
+            message.author.tag,
+            message.author.displayAvatarURL({ dynamic: true })
           )
+          .setDescription('Did I do it right?')
+          .addFields([
+            {
+              name: 'Input:',
+              value: string(args.input),
+            },
+            {
+              name: 'Output:',
+              value: string(evaluate(args.input)),
+            },
+          ])
       );
+    } catch (e) {
+      await message.channel.send(
+        new MessageEmbed({ color: 'RED', description: e.message })
+      );
+    }
   }
 }
 

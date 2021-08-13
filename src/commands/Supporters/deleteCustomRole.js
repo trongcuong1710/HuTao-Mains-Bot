@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 
 class DeleteCustomRoleCommand extends Command {
   constructor() {
@@ -9,9 +9,8 @@ class DeleteCustomRoleCommand extends Command {
       category: 'Moderation',
       channel: 'guild',
       description: {
-        description:
-          'Create a custom role for yourself if you are a patreon booster.',
-        usage: 'myrole <role name>',
+        description: "Delete a member's custom role.",
+        usage: 'delcusrole <member>',
       },
       args: [
         {
@@ -35,52 +34,29 @@ class DeleteCustomRoleCommand extends Command {
   }
 
   async exec(message, args) {
-    const permRoles = [
-      '810082837863858186', // Liyue Qixing
-      '810410368622395392', // KEQING'S KEY
-    ];
-    var i;
-    for (i = 0; i <= permRoles.length; i++) {
-      if (
-        message.member.roles.cache
-          .map((x) => x.id)
-          .filter((x) => permRoles.includes(x)).length === 0
-      )
-        return message.channel.send(
-          new Discord.MessageEmbed()
-            .setDescription("You can't do that with the permissions you have.")
-            .setColor(16711680)
-        );
-    }
     if (!args.member)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
-          description: `Please provide a member.`,
+          description: `Please specify a member.`,
         })
       );
-    else if (!args.reason)
-      return message.channel.send(
-        new Discord.MessageEmbed({
-          color: 'RED',
-          description: `Please provide a reason.`,
-        })
-      );
+    if (!args.reason) args.reason = '`None Provided`';
 
-    const customRoles = await this.client.db.keqingCustomRoles.find({
+    const customRoles = await this.client.db.huTaoCustomRoles.find({
       roleOwner: args.member.id,
     });
     const role = message.guild.roles.cache.get(
       customRoles.map((x) => x.roleID).join('\n')
     );
-    await this.client.db.keqingCustomRoles
+    await this.client.db.huTaoCustomRoles
       .deleteOne({ roleID: role.id })
       .then(async () => {
         if (!role) return;
 
-        role.delete(args.reason).then(async (deleted) => {
+        await role.delete(args.reason).then(async () => {
           await message.channel.send(
-            new Discord.MessageEmbed({
+            new MessageEmbed({
               color: 'GREEN',
               description: `Successfully deleted the role!`,
             })
@@ -90,4 +66,4 @@ class DeleteCustomRoleCommand extends Command {
   }
 }
 
-// module.exports = DeleteCustomRoleCommand;
+module.exports = DeleteCustomRoleCommand;

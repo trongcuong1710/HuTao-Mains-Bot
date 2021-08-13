@@ -17,13 +17,13 @@ class MyClient extends AkairoClient {
       {
         disableMentions: 'everyone',
         fetchAllMembers: true,
-        //partials: ['CHANNEL', 'GUILD_MEMBER', 'MESSAGE', 'REACTION', 'USER'],
+        partials: ['CHANNEL', 'MESSAGE', 'REACTION'],
         presence: {
           activity: {
-            name: `my Boo Taos.`,
+            name: `Zyla drown in my code...`,
             type: 'WATCHING',
           },
-          status: 'online',
+          status: 'idle',
           afk: false,
         },
       }
@@ -37,7 +37,7 @@ class MyClient extends AkairoClient {
       blockClient: true,
     });
     this.commandHandler.handle = async function (message) {
-      // if (message.author.id !== this.client.ownerID) return;
+      // if (message.author.id != this.client.ownerID) return;
       if (
         !(await this.client.db.huTaoBlacklists.findOne({
           channel_id: message.channel,
@@ -124,6 +124,8 @@ class MyClient extends AkairoClient {
         'huTaoMutes',
         new mongoose.Schema({
           member_id: String,
+          responsibleStaff: String,
+          reason: String,
           unmuteDate: Number,
         }),
         'huTaoMutes'

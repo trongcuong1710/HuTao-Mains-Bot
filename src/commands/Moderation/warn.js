@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 var moment = require('moment');
 const channels = require('../../Constants/channels.json');
 
@@ -37,24 +37,24 @@ class WarnCommand extends Command {
 
   async exec(message, args) {
     moment.locale('en');
-    if (!args.member) {
+    const prefix = this.client.commandHandler.prefix;
+    if (!args.member)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
-          description: `I couldn't find the user.`,
+          description: `Please specify a member.`,
         })
       );
-    }
     if (args.member.id === message.member.id)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `You can't warn yourself!`,
         })
       );
     if (args.member === message.guild.me)
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `You can't warn me!`,
         })
@@ -64,14 +64,20 @@ class WarnCommand extends Command {
       message.member.roles.highest.position
     )
       return message.channel.send(
-        new Discord.MessageEmbed({
+        new MessageEmbed({
           color: 'RED',
           description: `You can't warn someone with an equal or higher role!`,
         })
       );
 
     let reason = args.reason;
-    if (!args.reason) reason = `No Reason Provided.`;
+    if (!args.reason)
+      return message.channel.send(
+        new MessageEmbed({
+          color: 'RED',
+          description: `Please specify a reason.`,
+        })
+      );
 
     const permRoles = [
       '830700055539089457', // Admin
@@ -86,9 +92,10 @@ class WarnCommand extends Command {
           .filter((x) => permRoles.includes(x)).length === 0
       )
         return message.channel.send(
-          new Discord.MessageEmbed()
-            .setDescription("You can't do that with the permissions you have.")
-            .setColor(16711680)
+          new MessageEmbed({
+            color: 'RED',
+            description: "You can't do that with the permissions you have.",
+          })
         );
     }
 
@@ -110,84 +117,47 @@ class WarnCommand extends Command {
       .then(async (c) => {
         await message.channel
           .send(
-            new Discord.MessageEmbed({
+            new MessageEmbed({
               color: 'GREEN',
-              description: `${args.member} has now been warned.`,
+              description: `${args.member.user.tag} has now been warned.`,
               fields: [
                 {
                   name: `View`,
                   value: `${this.client.commandHandler.prefix}warns ${args.member} ${c.warnID}`,
-                  inline: true,
                 },
                 {
                   name: `Remove`,
                   value: `${this.client.commandHandler.prefix}removewarn ${args.member} ${c.warnID}`,
-                  inline: true,
                 },
               ],
             })
           )
-          .then(async (msg) => {
-            await this.client.channels.cache.get(channels.modLogChannel).send(
-              new Discord.MessageEmbed({
-                color: 'GREEN',
-                title: `Member Warned`,
-                description: `${args.member.user.username} has now been warned.`,
-                fields: [
-                  {
-                    name: `Moderator`,
-                    value: message.member,
-                    inline: true,
-                  },
-                  {
-                    name: `Member`,
-                    value: args.member,
-                    inline: true,
-                  },
-                  {
-                    name: `Reason`,
-                    value: reason,
-                    inline: false,
-                  },
-                  {
-                    name: `Warned At`,
-                    value: moment().format('LLLL'),
-                    inline: true,
-                  },
-                ],
-              })
-            );
-            await args.member
+          .then(async () => {
+            await this.client.channels.cache
+              .get(channels.punishmentLogsChannel)
               .send(
-                new Discord.MessageEmbed({
-                  color: 'RED',
+                new MessageEmbed({
+                  color: 'GREEN',
                   title: `Warned`,
-                  description: `You have been warned.`,
-                  fields: [
-                    {
-                      name: `Moderator`,
-                      value: message.member,
-                      inline: true,
-                    },
-                    {
-                      name: `Reason`,
-                      value: reason,
-                      inline: false,
-                    },
-                    {
-                      name: `Warned At`,
-                      value: moment().format('LLLL'),
-                      inline: true,
-                    },
-                  ],
-                  footer: {
-                    text: `If you think you are wrongfully warned, please contact an admin.`,
-                  },
+                  description: `**Offender**: ${args.member.user.tag}\n**Responsible Staff**: ${message.author.tag}\n**Reason**: ${reason}`,
+                  footer: { text: `ID: ${args.member.id}` },
+                  timestamp: new Date(),
                 })
-              )
-              .catch(async (e) => {
-                return;
-              });
+              );
+          });
+        args.member
+          .send(
+            new MessageEmbed({
+              color: 'RED',
+              title: `You have been warned in ${global.guild.name}.`,
+              description: `**Responsible Staff**: ${
+                message.author.tag || message.author.username || message.author
+              }\n**Reason**: ${reason}`,
+              timestamp: new Date(),
+            })
+          )
+          .catch((_) => {
+            return;
           });
       });
   }

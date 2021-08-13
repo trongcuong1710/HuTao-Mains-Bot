@@ -28,22 +28,24 @@ class BlacklistsCommand extends Command {
           .filter((x) => permRoles.includes(x)).length === 0
       )
         return message.channel.send(
-          new Discord.MessageEmbed()
-            .setDescription("You can't do that with the permissions you have.")
-            .setColor(16711680)
+          new MessageEmbed({
+            color: 'RED',
+            description: "You can't do that with the permissions you have.",
+          })
         );
     }
+
     const blacklists = await this.client.db.huTaoBlacklists.find();
     if (!blacklists.length)
       return message.channel.send(
         new Discord.MessageEmbed({
-          color: 16711680,
+          color: 'RED',
           description: `There are no blacklisted channels in the database.`,
         })
       );
     message.channel.send(
       new Discord.MessageEmbed({
-        color: 'c19bd2',
+        color: 'RED',
         title: `Blacklisted Channels`,
         description: blacklists
           .map(

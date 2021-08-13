@@ -1,5 +1,5 @@
 const { Command } = require('discord-akairo');
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const moment = require('moment');
 
 const filterLevels = {
@@ -34,7 +34,7 @@ const regions = {
 class ServerInfoCommand extends Command {
   constructor() {
     super('serverinfo', {
-      aliases: ['serverinfo', 'sinfo', 'si'],
+      aliases: ['serverinfo', 'sinfo'],
       ownerOnly: false,
       category: 'Information',
       channel: 'guild',
@@ -54,9 +54,9 @@ class ServerInfoCommand extends Command {
     const channels = message.guild.channels.cache;
     const emojis = message.guild.emojis.cache;
 
-    const embed = new Discord.MessageEmbed()
+    const embed = new MessageEmbed()
       .setDescription(`**Server Info**`)
-      .setColor('PURPLE')
+      .setColor('BLUE')
       .setThumbnail(message.guild.iconURL({ dynamic: true }))
       .addField('General', [
         `**Name:** ${message.guild.name}`,
@@ -102,8 +102,8 @@ class ServerInfoCommand extends Command {
         '\u200b',
       ])
       .addField('Useful Links', [
-        `**Website:** https://etsy.me/3nG0AU9`,
-        `**Ko-Fi:** https://ko-fi.com/hutaoscorner`,
+        `**Reddit:** https://reddit.com/r/EulaMains`,
+        `**Ko-Fi:** https://ko-fi.com/EulaMains`,
       ]);
 
     message.channel.send(embed);

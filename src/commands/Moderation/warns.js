@@ -61,30 +61,18 @@ class WarnsCommand extends Command {
         return await message.channel.send(
           new Discord.MessageEmbed({
             color: 'GREEN',
-            description: `k!removewarns ${args.member} ${w.map(
+            description: `.removewarn ${args.member} ${w.map(
               (x) => x.warnID
-            )} to remove a warning.`,
+            )} to remove a warning.\n\n**Warn ID**: ${w.map(
+              (x) => x.warnID
+            )}\n**Responsible Staff**: ${w.map(
+              (x) => x.warnedStaff
+            )}\n**Reason**: ${w
+              .map((x) => x.reason)
+              .join('\n')}\n**Date**: ${w.map((x) =>
+              moment(x.when).format('LLLL')
+            )}`,
             fields: [
-              {
-                name: 'Warn ID',
-                value: w.map((x) => x.warnID),
-                inline: true,
-              },
-              {
-                name: 'Moderator',
-                value: w.map((x) => x.warnedStaff),
-                inline: true,
-              },
-              {
-                name: 'Reason',
-                value: w.map((x) => x.reason).join('\n'),
-                inline: false,
-              },
-              {
-                name: 'Warned At',
-                value: w.map((x) => moment(x.when).format('LLLL')),
-                inline: true,
-              },
               {
                 name: `Remove`,
                 value: `${this.client.commandHandler.prefix}removewarn ${
@@ -112,19 +100,21 @@ class WarnsCommand extends Command {
           .filter((x) => permRoles.includes(x)).length === 0
       )
         return message.channel.send(
-          new Discord.MessageEmbed()
-            .setDescription("You can't do that with the permissions you have.")
-            .setColor(16711680)
+          new MessageEmbed({
+            color: 'RED',
+            description: "You can't do that with the permissions you have.",
+          })
         );
     }
+    const prefix = this.client.commandHandler.prefix;
+
     if (!args.member)
       return message.channel.send(
         new Discord.MessageEmbed({
-          color: 16711680,
-          description: `Please supply a member to view their warnings.`,
+          color: 'RED',
+          description: `Please specify a member.`,
         })
       );
-    const prefix = this.client.commandHandler.prefix;
     const warns = await this.client.db.huTaoWarns.find({
       warnedMember: args.member,
     });
