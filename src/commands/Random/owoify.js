@@ -21,7 +21,7 @@ class OwOifyCommand extends Command {
 
   async exec(message, args) {
     let owo = await neko.sfw.OwOify({ text: args.message });
-    message.channel.send(owo.owo);
+    message.channel.send(owo.owo).catch((e) => message.channel.send(e.message));
   }
 }
 
