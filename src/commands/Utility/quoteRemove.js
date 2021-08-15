@@ -51,11 +51,11 @@ class RemoveQuoteCommand extends Command {
         );
     }
 
-    const quotes = await this.client.db.eulaQuotes.findOne({
+    const quotes = await this.client.db.huTaoQuotes.findOne({
       quoteName: args.quote,
     });
-    if (await this.client.db.eulaQuotes.findOne({ quoteName: args.quote })) {
-      await this.client.db.eulaQuotes
+    if (await this.client.db.huTaoQuotes.findOne({ quoteName: args.quote })) {
+      await this.client.db.huTaoQuotes
         .deleteOne({
           quoteName: args.quote,
         })

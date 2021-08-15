@@ -71,8 +71,10 @@ class AddQuoteCommand extends Command {
     } catch (_) {
       data = args.answer;
     }
-    if (!(await this.client.db.eulaQuotes.findOne({ quoteName: args.quote }))) {
-      await this.client.db.eulaQuotes
+    if (
+      !(await this.client.db.huTaoQuotes.findOne({ quoteName: args.quote }))
+    ) {
+      await this.client.db.huTaoQuotes
         .create({
           quoteName: args.quote,
           quote: data,
