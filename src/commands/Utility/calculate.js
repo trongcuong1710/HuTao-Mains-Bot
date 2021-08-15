@@ -36,7 +36,7 @@ class CalculateCommand extends Command {
       message.channel.send(
         this.client.util
           .embed()
-          .setColor('BLUE')
+          .setColor('RED')
           .setAuthor(
             message.author.tag,
             message.author.displayAvatarURL({ dynamic: true })
