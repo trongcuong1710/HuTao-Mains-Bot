@@ -3,5 +3,6 @@
   "databaseLogsChannel": "838666031332851713",
   "errorLogsChannel": "838666046327619604",
   "modMailLogsChannel": "844172661344829440",
-  "messageLogsChannel": "875596330205081631"
+  "messageLogsChannel": "875596330205081631",
+  "welcomeChannel": "830700055811588137"
 }
