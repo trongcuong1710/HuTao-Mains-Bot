@@ -55,7 +55,7 @@ class ModmailCommand extends Command {
           await global.guild.channels
             .create(`${message.author.username}`, {
               reason: `New ticket created by ${message.author.username}`,
-              nsfw: true,
+              nsfw: false,
               type: 'text',
               parent: '844172518104760330',
               permissionOverwrites: [
@@ -99,7 +99,7 @@ class ModmailCommand extends Command {
                 })
               );
               await channel.send(
-                `Attention, ${admins} and ${mods}!`,
+                `Attention, @here!`,
                 new MessageEmbed({
                   color: 'RED',
                   description: `**${
